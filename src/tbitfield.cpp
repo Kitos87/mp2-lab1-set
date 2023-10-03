@@ -127,25 +127,14 @@ int TBitField::operator!=(const TBitField &bf) const // сравнение
     return !(*this == bf);
 }
 
-TBitField TBitField::operator|(const TBitField& bf) // операция "или"
-{
-    int k;
-    int z;
-    int y;
-    if (BitLen > bf.BitLen)
-    {
-        y = 0; // This is big
-        k = BitLen;
-        z = bf.BitLen;
+TBitField TBitField::operator|(const TBitField& bf) {
+    TBitField a(std::max(BitLen, bf.BitLen));  // Создаем новый объект с максимальной длиной
+    for (int i = 0; i < a.MemLen; i++) {
+        a.pMem[i] = 0;  // Инициализация нулями
+        if (i < MemLen) a.pMem[i] |= pMem[i];  // Если есть биты в первом поле, применяем операцию "или"
+        if (i < bf.MemLen) a.pMem[i] |= bf.pMem[i];  // Если есть биты во втором поле, применяем операцию "или"
     }
-    else {
-        y = 1; //bf is big
-        k = bf.BitLen;
-        z = BitLen;
-    }
-    TBitField a(k);
-    for (int i = 0; i <= GetMemIndex(z); i++) a.pMem[i] = bf.pMem[i] | pMem[i];
-    for (int i = (GetMemIndex(z) + 1); i < a.MemLen; i++) if (y == 1) a.pMem[i] = bf.pMem[i]; else  a.pMem[i] = pMem[i];
+
     return a;
 }
 
@@ -169,16 +158,9 @@ TBitField TBitField::operator~(void) // отрицание
 
     for (size_t i = 0; i < tmp.BitLen; i++)
     {
-        if (tmp.GetBit(i))
-        {
-            tmp.ClrBit(i);
-        }
-        else
-        {
-            tmp.SetBit(i);
-        }
+        if (tmp.GetBit(i)) tmp.ClrBit(i);
+        else tmp.SetBit(i);
     }
-
     return tmp;
 }
 
