@@ -15,12 +15,8 @@ TBitField::TBitField(int len)
 {
     if (len < 0) throw "len < 0";
     this->BitLen = len;
-    if (BitLen % (sizeof(TELEM)*8) == 0) {
-        MemLen = len / (sizeof(TELEM)*8);
-    }
-    else {
-        MemLen = (len / (sizeof(TELEM)*8)) + 1;
-    }
+    if (BitLen % (sizeof(TELEM)*8) == 0) MemLen = len / (sizeof(TELEM)*8);
+    else MemLen = (len / (sizeof(TELEM)*8)) + 1;
     pMem = new TELEM[MemLen];
     for (int i = 0; i < MemLen; i++) {
         pMem[i] = 0;
@@ -49,9 +45,7 @@ TBitField::~TBitField()
 
 int TBitField::GetMemIndex(const int n) const // индекс Мем для бита n
 {
-    if (n < 0 || n > BitLen) {
-        throw "Error index";
-    }
+    if (n < 0 || n > BitLen) throw "Error index";
     return n / (sizeof(TELEM)*8);
 }
 
@@ -69,26 +63,20 @@ int TBitField::GetLength(void) const // получить длину (к-во б�
 
 void TBitField::SetBit(const int n) // установить бит
 {
-    if (n < 0 || n > BitLen) {
-        throw "Error index";
-    }
+    if (n < 0 || n > BitLen) throw "Error index";
     pMem[GetMemIndex(n)] |= GetMemMask(n);
 
 }
 
 void TBitField::ClrBit(const int n) // очистить бит
 {
-    if (n < 0 || n > BitLen) {
-        throw "Error index";
-    }
+    if (n < 0 || n > BitLen) throw "Error index";
     pMem[GetMemIndex(n)] &= ~(GetMemMask(n));
 }
 
 int TBitField::GetBit(const int n) const // получить значение бита
 {
-    if (n < 0 || n > BitLen) {
-        throw "Error index!";
-    }
+    if (n < 0 || n > BitLen) throw "Error index!";
     if ((pMem[GetMemIndex(n)] & GetMemMask(n)) == 0) return 0;
     else return 1;
     
