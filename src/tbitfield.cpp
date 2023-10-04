@@ -15,17 +15,19 @@ TBitField::TBitField(int len)
 {
     if (len < 0) throw "len < 0";
     this->BitLen = len;
-    if (BitLen % sizeof(TELEM) == 0) {
-        MemLen = len / sizeof(TELEM);
+    if (BitLen % (sizeof(TELEM)*8) == 0) {
+        MemLen = len / (sizeof(TELEM)*8);
     }
     else {
-        MemLen = (len / sizeof(TELEM)) + 1;
+        MemLen = (len / (sizeof(TELEM)*8)) + 1;
     }
     pMem = new TELEM[MemLen];
     for (int i = 0; i < MemLen; i++) {
         pMem[i] = 0;
     }
 }
+
+
 
 TBitField::TBitField(const TBitField &bf) // конструктор копирования
 {
@@ -128,13 +130,11 @@ int TBitField::operator!=(const TBitField &bf) const // сравнение
 }
 
 TBitField TBitField::operator|(const TBitField& bf) {
-    TBitField a(std::max(BitLen, bf.BitLen));  // Создаем новый объект с максимальной длиной
+    TBitField a(std::max(BitLen, bf.BitLen));  
     for (int i = 0; i < a.MemLen; i++) {
-        a.pMem[i] = 0;  // Инициализация нулями
-        if (i < MemLen) a.pMem[i] |= pMem[i];  // Если есть биты в первом поле, применяем операцию "или"
-        if (i < bf.MemLen) a.pMem[i] |= bf.pMem[i];  // Если есть биты во втором поле, применяем операцию "или"
+        if (i < MemLen) a.pMem[i] |= pMem[i];  
+        if (i < bf.MemLen) a.pMem[i] |= bf.pMem[i]; 
     }
-
     return a;
 }
 

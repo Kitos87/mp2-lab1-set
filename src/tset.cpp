@@ -93,20 +93,20 @@ TSet TSet::operator+(const TSet &s) // объединение
 TSet TSet::operator+(const int Elem) // объединение с элементом
 {
     TSet a(*this);
-    if ((Elem < MaxPower) & (Elem >= 0)) {
+    if ((Elem < MaxPower) && (Elem >= 0)) {
         a.InsElem(Elem);
     }
-    else throw "Nrgative Elem";
+    else throw "Negative Elem";
     return a;
 }
 
 TSet TSet::operator-(const int Elem) // разность с элементом
 {
     TSet a(*this);
-    if ((Elem < MaxPower) & (Elem >= 0)) {
+    if ((Elem < MaxPower) && (Elem >= 0)) {
         a.DelElem(Elem);
     }
-    else throw "Nrgative Elem";
+    else throw "Negative Elem";
     return a;
 }
 
