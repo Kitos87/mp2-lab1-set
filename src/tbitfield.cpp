@@ -51,7 +51,8 @@ int TBitField::GetMemIndex(const int n) const // индекс Мем для би
 
 TELEM TBitField::GetMemMask(const int n) const // битовая маска для бита n
 {
-    return 1 << (n % (sizeof(TELEM) * 8));
+    if (n < 0 || n > BitLen) throw "Error index";
+    return 1 << ((n-1) % (sizeof(TELEM) * 8));
 }
 
 // доступ к битам битового поля
@@ -65,7 +66,6 @@ void TBitField::SetBit(const int n) // установить бит
 {
     if (n < 0 || n > BitLen) throw "Error index";
     pMem[GetMemIndex(n)] |= GetMemMask(n);
-
 }
 
 void TBitField::ClrBit(const int n) // очистить бит
@@ -77,9 +77,8 @@ void TBitField::ClrBit(const int n) // очистить бит
 int TBitField::GetBit(const int n) const // получить значение бита
 {
     if (n < 0 || n > BitLen) throw "Error index!";
-    if ((pMem[GetMemIndex(n)] & GetMemMask(n)) == 0) return 0;
+    if (!(pMem[GetMemIndex(n)] & GetMemMask(n))) return 0;
     else return 1;
-    
 }
 
 // битовые операции
@@ -104,7 +103,7 @@ int TBitField::operator==(const TBitField& bf) const // сравнение
 {
     if (BitLen != bf.BitLen)
         return 0;
-    for (size_t i = 0; i < MemLen; i++)
+    for (int i = 0; i < MemLen; i++)
     {
         if (pMem[i] != bf.pMem[i]) return 0;
     }
@@ -128,11 +127,8 @@ TBitField TBitField::operator|(const TBitField& bf) {
 
 
 TBitField TBitField::operator&(const TBitField& bf) // операция "и"
-{
-    int k;
-    if (BitLen > bf.BitLen) k = BitLen;
-    else k = bf.BitLen;
-    TBitField a(k); 
+{ 
+    TBitField a(std::max(BitLen, bf.BitLen)); 
     for (int i = 0; i <= GetMemIndex(min(BitLen, bf.BitLen)); i++) {
         a.pMem[i] = pMem[i] & bf.pMem[i];
     }
@@ -143,7 +139,6 @@ TBitField TBitField::operator&(const TBitField& bf) // операция "и"
 TBitField TBitField::operator~(void) // отрицание
 {
     TBitField tmp(*this);
-
     for (size_t i = 0; i < tmp.BitLen; i++)
     {
         if (tmp.GetBit(i)) tmp.ClrBit(i);
@@ -157,13 +152,17 @@ TBitField TBitField::operator~(void) // отрицание
 
 istream &operator>>(istream &istr, TBitField &bf) // ввод
 {
+    
     int len = 0;
     cout << "Enter the len: ";
     istr >> len;
+    if (len != bf.BitLen) throw "error len";
     for (int i = 0; i < len; i++) {
-        int flag = 0;
-        istr >> flag;
-        bf.SetBit(i);
+        int f = 0;
+        istr >> f;
+        if (f == 1) bf.SetBit(i);
+        else if (f == 0) bf.ClrBit(i);
+        else throw "error index";
     }
     return istr;
 }
